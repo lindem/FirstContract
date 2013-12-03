@@ -46,16 +46,52 @@ After development, if all contracts are usually satisfied, you can either
 still leave them in, or remove them (but then you need to handle violations
 yourself). 
 
-Other aliases include: 
+The aliases include (this list is growing, as I added only the most useful 
+ones first): 
 
- - `"Z"` for integers only
+### Numeric contracts
+
+ - `"Z"` for integers only (Number-type values without fractional parts)
  - `"Z+0"` for non-negative integers including zero
- - `"Z+"` for positive integers"
+ - `"Z+"` for positive integers 
+ - `"Z-"` for negative integers
+ - `"R"` for "proper" Number-type values (not `NaN` or `Infinity` values)
+ - `"R+0"` for positive floating point Number-type values
+ - `"R+"` for positive Number-type values
+ - `"R-"`" for negative Number-type values
+ 
+### Types
+
  - `"Function"` for values that must be functions
  - `"Number"` for values that must be of type Number
  - `"Array"` for values that must be an array
  - `"Boolean"` for values that must be either true or false ("proper" Booleans)
+ - `"String"` for values that must be of type String
+ - `"def"` for every value except `undefined`
+ - `"notnull"` for every value except `null`
+ - `"proper"` for every value except `null` or `undefined`
  
+### Exceptions
+
+ - `"none"` or `""` for a contract that's always fulfilled (anything goes)
+ - `"fail"` for a contract that's never fulfilled (develoment purposes)
  
-Unit Tests are in the `test` directory. 
-      
+### Compound contracts
+
+To use these, they have to be imported from their namespaces, which is given
+in full. 
+
+ - `Contracts.ArrayContracts.allElementsContracts(array, [contractsByAlias])` 
+ checks whether every element in an array fulfills all of the contracts.
+ - `Contracts.ObjectContracts.allValuesContracts(obj, [contractsByAlias])` 
+ checks whether every value (right-hand-side part) of the object satisfies
+ all contracts.
+ 
+### Tests
+
+Unit Tests are in the `test` directory. Coverage is probably not complete. 
+
+### TODO
+
+There's some redundancy in some checks. They are all built by combining the 
+most elementary ones; it's not very DRY.

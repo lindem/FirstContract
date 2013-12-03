@@ -319,6 +319,13 @@ export module Contracts {
             }
         }
 
+        export function positivity(n: number, semantic: string = ""+n) {
+            if (0 > n) {
+                throw contractViolation(semantic,
+                    "is a negative number.");
+            }
+        }
+
         export function nonNegativity(n:number, semantic:string = "" + n):number {
             if (0 > n) {
                 throw contractViolation(semantic,
@@ -341,8 +348,20 @@ export module Contracts {
             return n;
         }
 
-        export function nonNegativeInteger(n, semantic):number {
+        export function negativeInteger(n, semantic): number {
             Contracts.TypeContracts.isNumber(n, semantic);
+            Contracts.NumberContracts.negativity(n, semantic);
+            Contracts.NumberContracts.integer(n, semantic);
+            return n;
+        }
+
+        export function positiveInteger(n, semantic): number {
+            Contracts.NumberContracts.positivity(n, semantic);
+            Contracts.NumberContracts.integer(n, semantic);
+            return n;
+        }
+
+        export function nonNegativeInteger(n, semantic):number {
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.nonNegativity(n, semantic);
             Contracts.NumberContracts.integer(n, semantic);
@@ -350,11 +369,23 @@ export module Contracts {
         }
 
         export function nonNegativeNumber(n, semantic):number {
-            Contracts.TypeContracts.isNumber(n, semantic);
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.nonNegativity(n, semantic);
             return n;
         }
+
+        export function positiveNumber(n, semantic: string = "" + n) {
+            Contracts.NumberContracts.properNumber(n, semantic);
+            Contracts.NumberContracts.positivity(n, semantic);
+            return n;
+        }
+
+        export function negativeNumber(n, semantic: string = "" + n) {
+            Contracts.NumberContracts.properNumber(n, semantic);
+            Contracts.NumberContracts.negativity(n, semantic);
+            return n;
+        }
+
     }
     aliases = {
         // to be extended as needed. these aliases are used to determine
@@ -362,12 +393,20 @@ export module Contracts {
         // Basic
         "none": Contracts.BasicContracts.none,
         "": Contracts.BasicContracts.none,
+        // satisfy if not undefined
+        "def": Contracts.BasicContracts.defined,
+        // satisfy if neither null nor undefined
+        "proper": Contracts.BasicContracts.properValue,
         // Numbers
         "Z+0": Contracts.NumberContracts.nonNegativeInteger,
+        "Z+": Contracts.NumberContracts.positiveInteger,
+        "Z-": Contracts.NumberContracts.negativeInteger,
         "Z": Contracts.NumberContracts.integer,
         // I know, I know. It's not *really* R as in real numbers.
         // Bite me.
         "R+0": Contracts.NumberContracts.nonNegativeNumber,
+        "R+": Contracts.NumberContracts.positiveNumber,
+        "R-": Contracts.NumberContracts.negativeNumber,
         "R": Contracts.NumberContracts.properNumber,
         // Types
         "Function": Contracts.TypeContracts.isFunction,
