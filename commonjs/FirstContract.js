@@ -332,6 +332,14 @@ exports.contractify = contractify;
         }
         NumberContracts.negativity = negativity;
 
+        function positivity(n, semantic) {
+            if (typeof semantic === "undefined") { semantic = "" + n; }
+            if (0 > n) {
+                throw Contracts.contractViolation(semantic, "is a negative number.");
+            }
+        }
+        NumberContracts.positivity = positivity;
+
         function nonNegativity(n, semantic) {
             if (typeof semantic === "undefined") { semantic = "" + n; }
             if (0 > n) {
@@ -358,8 +366,22 @@ exports.contractify = contractify;
         }
         NumberContracts.properNumber = properNumber;
 
-        function nonNegativeInteger(n, semantic) {
+        function negativeInteger(n, semantic) {
             Contracts.TypeContracts.isNumber(n, semantic);
+            Contracts.NumberContracts.negativity(n, semantic);
+            Contracts.NumberContracts.integer(n, semantic);
+            return n;
+        }
+        NumberContracts.negativeInteger = negativeInteger;
+
+        function positiveInteger(n, semantic) {
+            Contracts.NumberContracts.positivity(n, semantic);
+            Contracts.NumberContracts.integer(n, semantic);
+            return n;
+        }
+        NumberContracts.positiveInteger = positiveInteger;
+
+        function nonNegativeInteger(n, semantic) {
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.nonNegativity(n, semantic);
             Contracts.NumberContracts.integer(n, semantic);
@@ -368,12 +390,27 @@ exports.contractify = contractify;
         NumberContracts.nonNegativeInteger = nonNegativeInteger;
 
         function nonNegativeNumber(n, semantic) {
-            Contracts.TypeContracts.isNumber(n, semantic);
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.nonNegativity(n, semantic);
             return n;
         }
         NumberContracts.nonNegativeNumber = nonNegativeNumber;
+
+        function positiveNumber(n, semantic) {
+            if (typeof semantic === "undefined") { semantic = "" + n; }
+            Contracts.NumberContracts.properNumber(n, semantic);
+            Contracts.NumberContracts.positivity(n, semantic);
+            return n;
+        }
+        NumberContracts.positiveNumber = positiveNumber;
+
+        function negativeNumber(n, semantic) {
+            if (typeof semantic === "undefined") { semantic = "" + n; }
+            Contracts.NumberContracts.properNumber(n, semantic);
+            Contracts.NumberContracts.negativity(n, semantic);
+            return n;
+        }
+        NumberContracts.negativeNumber = negativeNumber;
     })(Contracts.NumberContracts || (Contracts.NumberContracts = {}));
     var NumberContracts = Contracts.NumberContracts;
     aliases = {
@@ -382,12 +419,20 @@ exports.contractify = contractify;
         // Basic
         "none": Contracts.BasicContracts.none,
         "": Contracts.BasicContracts.none,
+        // satisfy if not undefined
+        "def": Contracts.BasicContracts.defined,
+        // satisfy if neither null nor undefined
+        "proper": Contracts.BasicContracts.properValue,
         // Numbers
         "Z+0": Contracts.NumberContracts.nonNegativeInteger,
+        "Z+": Contracts.NumberContracts.positiveInteger,
+        "Z-": Contracts.NumberContracts.negativeInteger,
         "Z": Contracts.NumberContracts.integer,
         // I know, I know. It's not *really* R as in real numbers.
         // Bite me.
         "R+0": Contracts.NumberContracts.nonNegativeNumber,
+        "R+": Contracts.NumberContracts.positiveNumber,
+        "R-": Contracts.NumberContracts.negativeNumber,
         "R": Contracts.NumberContracts.properNumber,
         // Types
         "Function": Contracts.TypeContracts.isFunction,
