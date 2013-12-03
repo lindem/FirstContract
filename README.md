@@ -15,6 +15,8 @@ If you declare a function that should take a non-negative, proper number, and
 return a non-negative, proper number, and you want code to die then and there
 if that isn't the case, then contracts are a tool to do that.
 
+Firstcontract will throw Exceptions to have your code die.
+
 ## getting firstcontract
 
 You can install firstcontract through npm, by typing
@@ -37,9 +39,7 @@ can be neither `NaN` nor `Infinity`) are ever encountered by that function,
 create a contract for it: 
 
     var contract = c(["R", "R"], "R"),
-        sum = contract(function (a, b) {
-            return a + b;
-        });
+        sum = contract(sum);
         
 `"R"` is an alias for the contract "Real numbers".
 
@@ -48,8 +48,10 @@ create a contract for it:
 
 As soon as a contract is violated, either by a contract function receiving 
 the wrong arguments or returning the wrong values, the contract will make
-your program blow up then and there. As such, the code between entry and 
-exit of the function is guaranteed to be able to make certain assumptions. 
+your program blow up then and there by throwing a "contract violation".
+As such, the code between entry and exit of the function is guaranteed to be
+able to make certain assumptions. If something unexpected happens, it happened
+*in* the function which failed to fulfill its contract.
 
 After development, if all contracts are usually satisfied, you can either
 still leave them in, or remove them (but then you need to handle violations
