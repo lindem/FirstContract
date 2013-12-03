@@ -1,0 +1,24 @@
+{
+  "name": "firstcontract",
+  "version": "0.0.2",
+  "description": "type contracts library",
+  "main": "index",
+  "scripts": {
+    "test": "nodeunit tests/*js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:lindem/FirstContract.git"
+  },
+  "keywords": [
+    "contract",
+    "devtools",
+    "type-safety"
+  ],
+  "author": "Timo Lindemann <timo.lindemann@sol-venetus.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lindem/FirstContract/issues"
+  },
+  "homepage": "https://github.com/lindem/FirstContract"
+}

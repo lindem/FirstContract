@@ -5,7 +5,7 @@
 var helper = require("./helper/helper"),
     throwTest = helper.throwTest,
     noThrowTest = helper.noThrowTest,
-    Contracts = require("../src/Contracts").Contracts,
+    Contracts = require("../FirstContract").Contracts,
     nonNegativeInteger = Contracts.byAlias("Z+0");
 
 module.exports = {
