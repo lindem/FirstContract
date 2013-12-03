@@ -2,45 +2,44 @@
 /**
  * Created by lindem on 12/2/13.
  */
-var throwTest = require("./helper").throwTest,
-    Contracts = require("../src/Contracts"),
-    NC = Contracts.NumberContracts,
-    nonNegativeInteger = NC.nonNegativeInteger;
+var helper = require("./helper/helper"),
+    throwTest = helper.throwTest,
+    noThrowTest = helper.noThrowTest,
+    Contracts = require("../src/Contracts").Contracts,
+    nonNegativeInteger = Contracts.byAlias("Z+0");
 
 module.exports = {
-    "test positive non-negative integer [values]": function (test) {
+    "test non-negative integer [values]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(-100);
         });
     },
-    "test positive non-negative integer [datatype]": function (test) {
+    "test non-negative integer [datatype]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger("Hello, World");
         });
     },
-    "test positive non-negative integer [NaN]": function (test) {
+    "test non-negative integer [NaN]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(NaN);
         });
     },
-    "test positive non-negative integer [Infinity]": function (test) {
+    "test non-negative integer [Infinity]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(Infinity);
         });
     },
-    "test positive non-negative integer [-Infinity]": function (test) {
+    "test non-negative integer [-Infinity]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(-Infinity);
         });
     },
-    "test positive non-negative integer [conformance]": function (test) {
-        test.expect(1);
-        test.doesNotThrow(function () {
+    "test non-negative integer [conformance]": function (test) {
+        noThrowTest(test, function () {
             nonNegativeInteger(10);
         });
-        test.done();
     },
-    "test positive non-negative integer [fractional]": function (test) {
+    "test non-negative integer [fractional]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(0.1);
         });
