@@ -8,7 +8,7 @@
 
 // The following line is needed for the typescript compiler. If you build this,
 // you should change this to something appropriate.
-///<reference path="../definitions/node.d.ts" />
+///<reference path="./definitions/node.d.ts" />
 
 
 export interface Contract {

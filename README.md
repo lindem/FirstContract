@@ -15,6 +15,15 @@ If you declare a function that should take a non-negative, proper number, and
 return a non-negative, proper number, and you want code to die then and there
 if that isn't the case, then contracts are a tool to do that.
 
+## getting firstcontract
+
+You can install firstcontract through npm, by typing
+
+     npm install firstcontract
+
+or by cloning this repository. The module is written in TypeScript, which I am
+learning at the moment. Ideas to improve are welcome.
+
 ## how it works
 
 A trivial example: 
@@ -71,10 +80,27 @@ ones first):
  - `"notnull"` for every value except `null`
  - `"proper"` for every value except `null` or `undefined`
  
-### Exceptions
+### Other
 
  - `"none"` or `""` for a contract that's always fulfilled (anything goes)
  - `"fail"` for a contract that's never fulfilled (develoment purposes)
+
+### Elementary contracts
+
+You can call any contract at any point in your code, if you want to make a
+decisive check (during development, you want things to blow up; "make it fail
+ early" is useful to find problems).
+
+All ECs share the same order of parameters:
+
+    Contracts.<ContractType>.<ContractName>(thingToTest, semanticName)
+
+- `thingToTest` is the variable holding the value you want checked.
+- `semanticName` is what the variable actually is for (try "margin", "width",
+"size"). The error message will contain that name and why a contract failed.
+
+All ECs either pass transparently or blow up by throwing an Error. That's the
+ intention.
  
 ### Compound contracts
 
@@ -93,5 +119,8 @@ Unit Tests are in the `test` directory. Coverage is probably not complete.
 
 ### TODO
 
-There's some redundancy in some checks. They are all built by combining the 
-most elementary ones; it's not very DRY.
+- There's some redundancy in some checks. They are all built by combining the
+most elementary ones; it's not very DRY. Improve that.
+- A nicer API might be nice. Easier said than done.
+- maybe break out the contract types into other files. Not sure yet if that's
+already worth it; it's not that many yet.
