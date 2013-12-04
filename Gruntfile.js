@@ -17,12 +17,13 @@ module.exports = function (grunt) {
                 sourceMap: true,               // generate a source map for every output js file. [true (default) | false]
                 sourceRoot: '',                // where to locate TypeScript files. [(default) '' == source ts location]
                 mapRoot: '',                   // where to locate .map.js files. [(default) '' == generated js location.]
-                declaration: false,            // generate a declaration .d.ts file for every output js file. [true | false (default)]
+                declaration: false            // generate a declaration .d.ts file for every output js file. [true | false (default)]
             },
             // a particular target
             cjsbuild: {
-                src: ["src/FirstContract.cjs.ts"],          // The source typescript files, http://gruntjs.com/configuring-tasks#files
-                out: 'commonjs/FirstContract.js',             // If specified, generate an out.js file which is the merged js file
+                src: ["src/FirstContract.ts"],          // The source typescript files, http://gruntjs.com/configuring-tasks#files
+                //outDir: 'commonjs',             // If specified, generate an out.js file which is the merged js file
+                outDir: 'commonjs',
 
                 //watch: 'src',                  // If specified, watches this directory for changes, and re-runs the current target
                 // use to override the grunt-ts project options above for this target
@@ -31,8 +32,12 @@ module.exports = function (grunt) {
                 }
             }
         },
+        clean: {
+            commonjs: ["commonjs"]
+        }
     });
 
     grunt.loadNpmTasks("grunt-ts");
-    grunt.registerTask("default", ["ts:cjsbuild"]);
+    grunt.loadNpmTasks("grunt-contrib-clean");
+    grunt.registerTask("default", ["clean:commonjs","ts:cjsbuild"]);
 };

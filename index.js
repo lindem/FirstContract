@@ -1,1 +1,1 @@
-module.exports = require("./commonjs/FirstContract");
+module.exports = require("./commonjs/FirstContract.js");

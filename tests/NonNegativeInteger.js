@@ -39,6 +39,11 @@ module.exports = {
             nonNegativeInteger(10);
         });
     },
+    "test non-negative integer [conformance; zero]": function (test) {
+        noThrowTest(test, function () {
+            nonNegativeInteger(0);
+        });
+    },
     "test non-negative integer [fractional]": function (test) {
         throwTest(test, function () {
             nonNegativeInteger(0.1);

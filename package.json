@@ -1,6 +1,6 @@
 {
   "name": "firstcontract",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "type contracts library",
   "main": "index",
   "scripts": {
@@ -25,6 +25,7 @@
     "grunt-cli": "~0.1.11",
     "grunt": "~0.4.2",
     "grunt-ts": "~1.4.5",
-    "nodeunit": "latest"
+    "nodeunit": "latest",
+    "grunt-contrib-clean": "~0.5.0"
   }
 }
