@@ -20,5 +20,11 @@
   "bugs": {
     "url": "https://github.com/lindem/FirstContract/issues"
   },
-  "homepage": "https://github.com/lindem/FirstContract"
+  "homepage": "https://github.com/lindem/FirstContract",
+  "devDependencies": {
+    "grunt-cli": "~0.1.11",
+    "grunt": "~0.4.2",
+    "grunt-ts": "~1.4.5",
+    "nodeunit": "latest"
+  }
 }

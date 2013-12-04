@@ -37,14 +37,14 @@ export interface Contract {
  * @param returns {*}
  * @returns {function(Function): function(): *}
  */
-export function c(params: any, returns: any) {
+export function c(params: any, returns: any): Function {
     var contract = {params: params, returns: returns};
     return function (fn: Function) {
         return contractify(contract, fn);
     }
 }
 
-export function contractify(contract:Contract, fun:Function) {
+export function contractify(contract:Contract, fun:Function): Function {
     var paramContracts = contract.params.map(function (specifier):Function {
             var resolved = Contracts.byAlias(specifier);
             if (!resolved) {
@@ -63,7 +63,7 @@ export function contractify(contract:Contract, fun:Function) {
      contract.
      - fourth, the return value of the underlying function is returned.
      */
-    return function () {
+    return function (): any {
         var ret:any,
             i:number,
             len:number = arguments["length"];
@@ -105,7 +105,10 @@ export module Contracts {
         }
 
         // The autofail contract.
-        export function fail(a:any, semantic:string = ""):any {
+        // The inspection for unused local symbols is disabled because of the
+        // parameter, which is unused.
+        //noinspection JSUnusedLocalSymbols
+        export function fail(_a:any, semantic:string = ""):any {
             throw Contracts.contractViolation(semantic, "prescribed automatic failure");
         }
 
