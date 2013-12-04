@@ -1,9 +1,13 @@
 FirstContract
 =============
 
-A JavaScript contracting library. 
+A JavaScript data contract library. It's not done yet, but usable. It works with:
 
-This is very much a work in progress, but it's usable. 
+- node.js
+- MSIE 10
+- Chrome/Chromium (also on Android)
+- Firefox
+- PhantomJS
 
 ## Why type contracts?
 A contract provides a run-time clamp around your code. As JavaScript has no
@@ -55,12 +59,15 @@ the return value's check.
 
 As soon as a contract is violated, either by a contract function receiving 
 the wrong arguments or returning the wrong values, the contract will make
-your program blow up then and there by throwing a "contract violation".
-As such, the code between entry and exit of the function is guaranteed to be
-able to make certain assumptions. If something unexpected happens, it happened
-*in* the function which failed to fulfill its contract.
+your program blow up then and there by throwing a "contract violation" (an
+exception).
 
-After development, if all contracts are usually satisfied, you can either
+As such, the code between entry and exit of the function is guaranteed to be
+able to make certain assumptions -- execution won't even reach the code
+otherwise. If something unexpected happens, it did not happen in the functions
+which fulfilled their contracts.
+
+After development, if all contracts are "usually satisfied", you can either
 still leave them in, or remove them (but then you need to handle violations
 yourself). 
 
@@ -77,10 +84,15 @@ ones first):
  - `"R+0"` for positive floating point Number-type values
  - `"R+"` for positive Number-type values
  - `"R-"`" for negative Number-type values
+
+### Strings
+ - `"S+"`: passes for nonempty String. `""` and non-String values fail the
+ contract.
  
 ### Dates 
  
- - `"Future"` passes if the date is in the future (compared to when the test is run)
+ - `"Future"` passes if the date is in the future (compared to when the test is
+ run)
  - `"Past"` passes if the date is in the past seen from when the test is run
  
 ### Types
@@ -90,7 +102,7 @@ ones first):
  - `"Array"` for values that must be an array
  - `"Boolean"` for values that must be either true or false ("proper" Booleans)
  - `"Date"` passes for Dates.
- - `"String"` for values that must be of type String
+ - `"String"` or `"S"` for values that must be of type String
  - `"def"` for every value except `undefined`
  - `"notnull"` for every value except `null`
  - `"proper"` for every value except `null` or `undefined`
