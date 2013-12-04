@@ -1,0 +1,12 @@
+.git*
+src/
+commonjs/test
+node_modules
+tests
+build
+Gruntfile
+.npmignore
+*tmp.txt
+.idea
+*iml
+browser
