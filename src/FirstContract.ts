@@ -10,6 +10,18 @@
 // you should change this to something appropriate.
 ///<reference path="./definitions/node.d.ts" />
 
+function parseFunc(func:Function): any {
+    var name = func["name"];
+    if (name === undefined) {
+        try {
+            name = func.toString().match(/^function\s*([^\s(]+)/)[1];
+        } catch (e) {
+            name = "(anonymous function)"
+        }
+    }
+    return name;
+}
+
 export interface Contract {
     params: any[];
     returns: any;
@@ -66,7 +78,7 @@ export function contractify(contract:Contract, fun:Function):Function {
         var ret:any,
             i:number,
             len:number = arguments["length"],
-            name:string = fun["name"] || "(anonymous function)",
+            name:string = parseFunc(fun),
             err:string;
 
         for (i = 0; i < len; i += 1) {
