@@ -1,6 +1,8 @@
 /**
  * Created on 12/2/13.
- * © 2013 Sol Venetus Software GmbH, Germany
+ *
+ * (c) 2013 Sol Venetus Software GmbH, Germany
+ * <timo.lindemann@sol-venetus.de>
  *
  * This software is provided under the MIT license. See the file LICENSE.TXT for
  * details.
@@ -435,6 +437,15 @@ export module Contracts {
         }
 
     }
+    export module StringContracts {
+        export function notEmpty(s: string, semantic: string): string {
+            Contracts.TypeContracts.isString(s);
+            if (1 > s.length) {
+                throw contractViolation(semantic, "is the empty string.");
+            }
+            return s;
+        }
+    }
     export module DateContracts {
         export function isFuture(d:Date, semantic:string = "this Date"):Date {
             var now;
@@ -482,6 +493,8 @@ export module Contracts {
         // Types
         "Function": Contracts.TypeContracts.isFunction,
         "Number": Contracts.TypeContracts.isNumber,
+        "S": Contracts.TypeContracts.isString,
+        "S+": Contracts.StringContracts.notEmpty,
         "Boolean": Contracts.BasicContracts.realBoolean,
         "Array": Contracts.TypeContracts.isArray,
         "Date": Contracts.TypeContracts.isDate,

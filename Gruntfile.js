@@ -35,8 +35,12 @@ module.exports = function (grunt) {
         clean: {
             commonjs: ["commonjs"]
         },
-        mocha: {
+        mochaTest: {
             test: {
+                options: {
+                    reporter: "spec",
+                    ui: "tdd"
+                },
                 src: ["tests/*js"]
             }
         },
@@ -68,7 +72,7 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-mocha");
+    grunt.loadNpmTasks("grunt-mocha-test");
     grunt.loadNpmTasks("grunt-mocha-phantomjs");
     grunt.loadNpmTasks("grunt-browserify");
     grunt.loadNpmTasks("grunt-git");
@@ -77,6 +81,6 @@ module.exports = function (grunt) {
         "mocha_phantomjs:browsersuite"
     ]);
     grunt.registerTask("gitpush", ["gitpush:tixn", "gitpush:github"]);
-    grunt.registerTask("test", ["mocha:test"]);
-    grunt.registerTask("default", ["clean:commonjs","ts:cjsbuild", "test"]);
+    grunt.registerTask("test", ["mochaTest"]);
+    grunt.registerTask("default", ["clean:commonjs", "ts:cjsbuild", "mochaTest"]);
 };

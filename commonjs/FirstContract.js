@@ -330,6 +330,17 @@ exports.contractify = contractify;
         NumberContracts.negativeNumber = negativeNumber;
     })(Contracts.NumberContracts || (Contracts.NumberContracts = {}));
     var NumberContracts = Contracts.NumberContracts;
+    (function (StringContracts) {
+        function notEmpty(s, semantic) {
+            Contracts.TypeContracts.isString(s);
+            if (1 > s.length) {
+                throw Contracts.contractViolation(semantic, "is the empty string.");
+            }
+            return s;
+        }
+        StringContracts.notEmpty = notEmpty;
+    })(Contracts.StringContracts || (Contracts.StringContracts = {}));
+    var StringContracts = Contracts.StringContracts;
     (function (DateContracts) {
         function isFuture(d, semantic) {
             if (typeof semantic === "undefined") { semantic = "this Date"; }
@@ -373,6 +384,8 @@ exports.contractify = contractify;
         "R": Contracts.NumberContracts.properNumber,
         "Function": Contracts.TypeContracts.isFunction,
         "Number": Contracts.TypeContracts.isNumber,
+        "S": Contracts.TypeContracts.isString,
+        "S+": Contracts.StringContracts.notEmpty,
         "Boolean": Contracts.BasicContracts.realBoolean,
         "Array": Contracts.TypeContracts.isArray,
         "Date": Contracts.TypeContracts.isDate,
