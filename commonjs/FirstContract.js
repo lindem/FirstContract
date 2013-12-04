@@ -1,3 +1,15 @@
+function parseFunc(func) {
+    var name = func["name"];
+    if (name === undefined) {
+        try  {
+            name = func.toString().match(/^function\s*([^\s(]+)/)[1];
+        } catch (e) {
+            name = "(anonymous function)";
+        }
+    }
+    return name;
+}
+
 function c(params, returns) {
     var contract = { params: params, returns: returns };
     return function (fn) {
@@ -16,7 +28,7 @@ function contractify(contract, fun) {
     }), returnContract = contract.returns;
 
     return function () {
-        var ret, i, len = arguments["length"], name = fun["name"] || "(anonymous function)", err;
+        var ret, i, len = arguments["length"], name = parseFunc(fun), err;
 
         for (i = 0; i < len; i += 1) {
             if (paramContracts[i]) {
