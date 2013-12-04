@@ -86,6 +86,7 @@ export function contractify(contract:Contract, fun:Function): Function {
 
 export module Contracts {
     var aliases;
+
     export function contractViolation(semanticName:string, error:string):Error {
         return new Error(["Contract Violation:", semanticName, error].join(" "));
     }
@@ -169,6 +170,12 @@ export module Contracts {
     }
 
     export module TypeContracts {
+        export function isDate(a: any, semantic: string = "this argument"): Date {
+            if (Object.prototype.toString.call(a) !== '[object Date]') {
+                throw contractViolation(semantic, "is not a date");
+            }
+            return a;
+        }
         /**
          * The contract is fulfilled for all values of the Number type.
          * The Oddballs {NaN}, {Infinity} and {-Infinity} also fulfill the
@@ -390,6 +397,28 @@ export module Contracts {
         }
 
     }
+    export module DateContracts {
+        export function isFuture(d: Date, semantic: string = "this Date"): Date {
+            var now;
+            Contracts.TypeContracts.isDate(d);
+            now = Date.now();
+            // XXX maybe one could imagine a certain tolerance is needed?
+            if (d.getTime() < now) {
+                throw contractViolation(semantic, "is in the past.")
+            }
+            return d;
+        }
+        export function isPast(d: Date, semantic: string = "this Date"): Date {
+            var now;
+            Contracts.TypeContracts.isDate(d);
+            now = Date.now();
+            // XXX maybe one could imagine a certain tolerance is needed?
+            if (d.getTime() > now) {
+                throw contractViolation(semantic, "is in the future.")
+            }
+            return d;
+        }
+    }
     aliases = {
         // to be extended as needed. these aliases are used to determine
         // a contract function by byAlias.
@@ -415,6 +444,10 @@ export module Contracts {
         "Function": Contracts.TypeContracts.isFunction,
         "Number": Contracts.TypeContracts.isNumber,
         "Boolean": Contracts.BasicContracts.realBoolean,
-        "Array": Contracts.TypeContracts.isArray
+        "Array": Contracts.TypeContracts.isArray,
+        "Date": Contracts.TypeContracts.isDate,
+        "Future": Contracts.DateContracts.isFuture,
+        "Past": Contracts.DateContracts.isPast
     };
+
 }

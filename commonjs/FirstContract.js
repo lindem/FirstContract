@@ -36,7 +36,7 @@ function contractify(contract, fun) {
 exports.contractify = contractify;
 
 (function (Contracts) {
-    var aliases;
+    var aliases, c;
     function contractViolation(semanticName, error) {
         return new Error(["Contract Violation:", semanticName, error].join(" "));
     }
@@ -100,6 +100,15 @@ exports.contractify = contractify;
     var BasicContracts = Contracts.BasicContracts;
 
     (function (TypeContracts) {
+        function isDate(a, semantic) {
+            if (typeof semantic === "undefined") { semantic = "this argument"; }
+            if (Object.prototype.toString.call(a) !== '[object Date]') {
+                throw Contracts.contractViolation(semantic, "is not a date");
+            }
+            return a;
+        }
+        TypeContracts.isDate = isDate;
+
         function isNumber(a, semantic) {
             if (typeof semantic === "undefined") { semantic = "this argument"; }
             if (typeof a !== 'number') {
@@ -282,6 +291,33 @@ exports.contractify = contractify;
         NumberContracts.negativeNumber = negativeNumber;
     })(Contracts.NumberContracts || (Contracts.NumberContracts = {}));
     var NumberContracts = Contracts.NumberContracts;
+    (function (DateContracts) {
+        function isFuture(d, semantic) {
+            if (typeof semantic === "undefined") { semantic = "this Date"; }
+            var now;
+            Contracts.TypeContracts.isDate(d);
+            now = Date.now();
+
+            if (d.getTime() < now) {
+                throw Contracts.contractViolation(semantic, "is in the past.");
+            }
+            return d;
+        }
+        DateContracts.isFuture = isFuture;
+        function isPast(d, semantic) {
+            if (typeof semantic === "undefined") { semantic = "this Date"; }
+            var now;
+            Contracts.TypeContracts.isDate(d);
+            now = Date.now();
+
+            if (d.getTime() > now) {
+                throw Contracts.contractViolation(semantic, "is in the future.");
+            }
+            return d;
+        }
+        DateContracts.isPast = isPast;
+    })(Contracts.DateContracts || (Contracts.DateContracts = {}));
+    var DateContracts = Contracts.DateContracts;
     aliases = {
         "none": Contracts.BasicContracts.none,
         "": Contracts.BasicContracts.none,
@@ -298,8 +334,12 @@ exports.contractify = contractify;
         "Function": Contracts.TypeContracts.isFunction,
         "Number": Contracts.TypeContracts.isNumber,
         "Boolean": Contracts.BasicContracts.realBoolean,
-        "Array": Contracts.TypeContracts.isArray
+        "Array": Contracts.TypeContracts.isArray,
+        "Date": Contracts.TypeContracts.isDate,
+        "Future": Contracts.DateContracts.isFuture,
+        "Past": Contracts.DateContracts.isPast
     };
+    c = c;
 })(exports.Contracts || (exports.Contracts = {}));
 var Contracts = exports.Contracts;
 
