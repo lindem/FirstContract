@@ -1,10 +1,10 @@
 {
   "name": "firstcontract",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "type contracts library",
   "main": "index",
   "scripts": {
-    "test": "nodeunit tests/*js"
+    "test": "mocha -u tdd tests/*js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,12 @@
     "grunt-cli": "~0.1.11",
     "grunt": "~0.4.2",
     "grunt-ts": "~1.4.5",
-    "nodeunit": "latest",
-    "grunt-contrib-clean": "~0.5.0"
+    "grunt-contrib-clean": "~0.5.0",
+    "mocha": "~1.15.1",
+    "browserify": "~2.36.1",
+    "grunt-mocha-phantomjs": "~0.3.1",
+    "grunt-browserify": "~1.2.11",
+    "grunt-mocha": "~0.4.7",
+    "grunt-git": "~0.2.2"
   }
 }
