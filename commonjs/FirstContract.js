@@ -16,11 +16,26 @@ function contractify(contract, fun) {
     }), returnContract = contract.returns;
 
     return function () {
-        var ret, i, len = arguments["length"];
+        var ret, i, len = arguments["length"], name = fun["name"] || "(anonymous function)", err;
 
         for (i = 0; i < len; i += 1) {
             if (paramContracts[i]) {
-                paramContracts[i].apply(null, [arguments[i]]);
+                try  {
+                    paramContracts[i].apply(null, [
+                        arguments[i],
+                        ["function ", name, " [parameter ", i + 1, "]"].join("")
+                    ]);
+                } catch (e) {
+                    err = Contracts.violationMessage(e.message);
+                    e.message = [
+                        "Contract Violation:",
+                        "function:",
+                        name,
+                        "(parameter: ",
+                        i,
+                        "): "
+                    ].join(" ");
+                }
             }
         }
         ret = fun.apply(this, arguments);
@@ -36,11 +51,23 @@ function contractify(contract, fun) {
 exports.contractify = contractify;
 
 (function (Contracts) {
-    var aliases, c;
+    var aliases;
+
     function contractViolation(semanticName, error) {
         return new Error(["Contract Violation:", semanticName, error].join(" "));
     }
     Contracts.contractViolation = contractViolation;
+
+    function violationMessage(msg) {
+        var newerr;
+        if (/^Contract violation/.test(msg)) {
+            newerr = msg.slice(20);
+        } else {
+            throw new Error(msg);
+        }
+        return newerr;
+    }
+    Contracts.violationMessage = violationMessage;
 
     function byAlias(name) {
         if (aliases[name] !== undefined) {
@@ -187,7 +214,7 @@ exports.contractify = contractify;
         function finity(n, semantic) {
             if (typeof semantic === "undefined") { semantic = "[Number]"; }
             if (!isFinite(n)) {
-                throw Contracts.contractViolation(semantic, " is not finite.");
+                throw Contracts.contractViolation(semantic, "is not finite.");
             }
             return n;
         }
@@ -304,6 +331,7 @@ exports.contractify = contractify;
             return d;
         }
         DateContracts.isFuture = isFuture;
+
         function isPast(d, semantic) {
             if (typeof semantic === "undefined") { semantic = "this Date"; }
             var now;
@@ -339,7 +367,6 @@ exports.contractify = contractify;
         "Future": Contracts.DateContracts.isFuture,
         "Past": Contracts.DateContracts.isPast
     };
-    c = c;
 })(exports.Contracts || (exports.Contracts = {}));
 var Contracts = exports.Contracts;
 

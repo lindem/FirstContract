@@ -1,6 +1,9 @@
 /**
  * Created by lindem on 12/3/13.
  */
+function sum (a, b) {
+    return a + b;
+}
 
 var FirstContract = require("./helper/proxy"),
     Contracts = FirstContract.Contracts,
@@ -9,9 +12,6 @@ var FirstContract = require("./helper/proxy"),
     helper = require("./helper/helper"),
     throwTest = helper.throwTest,
     noThrowTest = helper.noThrowTest,
-    sum = function (a, b) {
-        return a + b;
-    },
     RR_R = c(["R", "R"], "R"),
     RR_Rp = c(["R", "R"], "R+");
 
@@ -41,5 +41,18 @@ module.exports = {
         throwTest(test, function () {
             RR_Rp(sum)(1, NaN);
         });
+    },
+    "test contractify error message [fail]": function (test) {
+        var msg;
+        try {
+            RR_Rp(sum)(1, NaN);
+        } catch (e) {
+            msg = e.message;
+        }
+        test.expect(2);
+        test.ok(/function sum/.test(msg));
+        test.ok(/parameter 2/.test(msg));
+        test.done();
     }
+
 };

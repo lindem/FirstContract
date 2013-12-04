@@ -10,7 +10,6 @@
 // you should change this to something appropriate.
 ///<reference path="./definitions/node.d.ts" />
 
-
 export interface Contract {
     params: any[];
     returns: any;
@@ -37,14 +36,14 @@ export interface Contract {
  * @param returns {*}
  * @returns {function(Function): function(): *}
  */
-export function c(params: any, returns: any): Function {
+export function c(params:any, returns:any):Function {
     var contract = {params: params, returns: returns};
-    return function (fn: Function) {
+    return function (fn:Function) {
         return contractify(contract, fn);
     }
 }
 
-export function contractify(contract:Contract, fun:Function): Function {
+export function contractify(contract:Contract, fun:Function):Function {
     var paramContracts = contract.params.map(function (specifier):Function {
             var resolved = Contracts.byAlias(specifier);
             if (!resolved) {
@@ -63,14 +62,28 @@ export function contractify(contract:Contract, fun:Function): Function {
      contract.
      - fourth, the return value of the underlying function is returned.
      */
-    return function (): any {
+    return function ():any {
         var ret:any,
             i:number,
-            len:number = arguments["length"];
+            len:number = arguments["length"],
+            name:string = fun["name"] || "(anonymous function)",
+            err:string;
 
         for (i = 0; i < len; i += 1) {
             if (paramContracts[i]) {
-                paramContracts[i].apply(null, [arguments[i]]);
+                try {
+                    paramContracts[i].apply(null, [arguments[i],
+                        ["function ", name, " [parameter ", i + 1, "]"].join("")
+                    ]);
+                } catch (e) {
+                    /* if there is a Contract Violation, insert the function name
+                     in front of the error message. */
+                    err = Contracts.violationMessage(e.message);
+                    e.message = ["Contract Violation:",
+                        "function:", name,
+                        "(parameter: ", i, "): "].join(" ");
+                    //throw e;
+                }
             }
         }
         ret = fun.apply(this, arguments);
@@ -87,8 +100,21 @@ export function contractify(contract:Contract, fun:Function): Function {
 export module Contracts {
     var aliases;
 
-    export function contractViolation(semanticName:string, error:string):Error {
+    export function contractViolation(semanticName:string, error:string) {
         return new Error(["Contract Violation:", semanticName, error].join(" "));
+    }
+
+    export function violationMessage(msg:string):string {
+        var newerr:string;
+        if (/^Contract violation/.test(msg)) {
+            newerr = msg.slice(20);
+
+        } else {
+            /* if this is called on any message not from a contract violation,
+             it's an error. */
+            throw new Error(msg);
+        }
+        return newerr;
     }
 
     export function byAlias(name:string) {
@@ -170,12 +196,13 @@ export module Contracts {
     }
 
     export module TypeContracts {
-        export function isDate(a: any, semantic: string = "this argument"): Date {
+        export function isDate(a:any, semantic:string = "this argument"):Date {
             if (Object.prototype.toString.call(a) !== '[object Date]') {
                 throw contractViolation(semantic, "is not a date");
             }
             return a;
         }
+
         /**
          * The contract is fulfilled for all values of the Number type.
          * The Oddballs {NaN}, {Infinity} and {-Infinity} also fulfill the
@@ -284,8 +311,7 @@ export module Contracts {
          * @param contracts
          * @returns {*}
          */
-        export function allElementsContracts(a:any[],
-                                             contracts:string[]): any[] {
+        export function allElementsContracts(a:any[], contracts:string[]):any[] {
             var i:number,
                 j:number,
                 alen:number,
@@ -310,7 +336,7 @@ export module Contracts {
 
         export function finity(n:number, semantic:string = "[Number]"):number {
             if (!isFinite(n)) {
-                throw contractViolation(semantic, " is not finite.");
+                throw contractViolation(semantic, "is not finite.");
             }
             return n;
         }
@@ -329,7 +355,7 @@ export module Contracts {
             }
         }
 
-        export function positivity(n: number, semantic: string = ""+n) {
+        export function positivity(n:number, semantic:string = "" + n) {
             if (0 > n) {
                 throw contractViolation(semantic,
                     "is a negative number.");
@@ -358,14 +384,14 @@ export module Contracts {
             return n;
         }
 
-        export function negativeInteger(n, semantic): number {
+        export function negativeInteger(n, semantic):number {
             Contracts.TypeContracts.isNumber(n, semantic);
             Contracts.NumberContracts.negativity(n, semantic);
             Contracts.NumberContracts.integer(n, semantic);
             return n;
         }
 
-        export function positiveInteger(n, semantic): number {
+        export function positiveInteger(n, semantic):number {
             Contracts.NumberContracts.positivity(n, semantic);
             Contracts.NumberContracts.integer(n, semantic);
             return n;
@@ -384,13 +410,13 @@ export module Contracts {
             return n;
         }
 
-        export function positiveNumber(n, semantic: string = "" + n) {
+        export function positiveNumber(n, semantic:string = "" + n) {
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.positivity(n, semantic);
             return n;
         }
 
-        export function negativeNumber(n, semantic: string = "" + n) {
+        export function negativeNumber(n, semantic:string = "" + n) {
             Contracts.NumberContracts.properNumber(n, semantic);
             Contracts.NumberContracts.negativity(n, semantic);
             return n;
@@ -398,7 +424,7 @@ export module Contracts {
 
     }
     export module DateContracts {
-        export function isFuture(d: Date, semantic: string = "this Date"): Date {
+        export function isFuture(d:Date, semantic:string = "this Date"):Date {
             var now;
             Contracts.TypeContracts.isDate(d);
             now = Date.now();
@@ -408,7 +434,8 @@ export module Contracts {
             }
             return d;
         }
-        export function isPast(d: Date, semantic: string = "this Date"): Date {
+
+        export function isPast(d:Date, semantic:string = "this Date"):Date {
             var now;
             Contracts.TypeContracts.isDate(d);
             now = Date.now();
