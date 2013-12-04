@@ -34,10 +34,49 @@ module.exports = function (grunt) {
         },
         clean: {
             commonjs: ["commonjs"]
+        },
+        mocha: {
+            test: {
+                src: ["tests/*js"]
+            }
+        },
+        browserify: {
+            browsersuite: {
+                files: {
+                    "browser/build.js": ["browser/alltests.js"]
+                }
+            }
+        },
+        mocha_phantomjs: {
+            browsersuite: ["browser/*.html"]
+        },
+        gitpush: {
+            "github": {
+                options: {
+                    remote: "github",
+                    branch: "master"
+                }
+            },
+            "tixn": {
+                options: {
+                    remote: "origin",
+                    branch: "master"
+                }
+            }
         }
     });
 
     grunt.loadNpmTasks("grunt-ts");
     grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.registerTask("default", ["clean:commonjs","ts:cjsbuild"]);
+    grunt.loadNpmTasks("grunt-mocha");
+    grunt.loadNpmTasks("grunt-mocha-phantomjs");
+    grunt.loadNpmTasks("grunt-browserify");
+    grunt.loadNpmTasks("grunt-git");
+    grunt.registerTask("browsersuite", [
+        "browserify:browsersuite",
+        "mocha_phantomjs:browsersuite"
+    ]);
+    grunt.registerTask("gitpush", ["gitpush:tixn", "gitpush:github"]);
+    grunt.registerTask("test", ["mocha:test"]);
+    grunt.registerTask("default", ["clean:commonjs","ts:cjsbuild", "test"]);
 };
