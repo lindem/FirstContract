@@ -8,7 +8,7 @@ This is very much a work in progress, but it's usable.
 ## Why type contracts?
 A contract provides a run-time clamp around your code. As JavaScript has no
 static typing (and many people, myself included, argue it doesn't necessarily
-need one), sometimes it's nice, during development, to have code just die if
+need it), sometimes it's nice, during development, to have code just die if
 types don't match. 
 
 If you declare a function that should take a non-negative, proper number, and
@@ -16,8 +16,8 @@ return a non-negative, proper number, and you want code to die then and there
 if that isn't the case, then contracts are a tool to do that.
 
 Firstcontract will throw Exceptions to have your code die. It doesn't require
-you to even rewrite to the function you are making a contract for. It's terse
-and on npm. 
+you to even touch the function you are making a contract for. It's got a terse 
+syntax and is on npm. 
 
 ## getting firstcontract
 
