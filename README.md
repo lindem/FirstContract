@@ -38,13 +38,18 @@ To be sure that only proper numbers (a number that adheres to this contract
 can be neither `NaN` nor `Infinity`) are ever encountered by that function, 
 create a contract for it: 
 
-    var contract = c(["R", "R"], "R"),
+    var c = require("firstcontract").c, 
+        contract = c(["R", "R"], "R"),
         sum = contract(sum);
         
 `"R"` is an alias for the contract "Real numbers".
 
 > Yes I know. IEEE-754 floating point is not "real numbers". But it's close 
 > enough. 
+
+The `c` shorthand above creates a contract function. The first argument is
+an array with aliases for the parameters, the second parameter is an alias for 
+the return value's check.
 
 As soon as a contract is violated, either by a contract function receiving 
 the wrong arguments or returning the wrong values, the contract will make
