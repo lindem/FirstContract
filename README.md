@@ -15,7 +15,9 @@ If you declare a function that should take a non-negative, proper number, and
 return a non-negative, proper number, and you want code to die then and there
 if that isn't the case, then contracts are a tool to do that.
 
-Firstcontract will throw Exceptions to have your code die.
+Firstcontract will throw Exceptions to have your code die. It doesn't require
+you to even rewrite to the function you are making a contract for. It's terse
+and on npm. 
 
 ## getting firstcontract
 
@@ -76,12 +78,18 @@ ones first):
  - `"R+"` for positive Number-type values
  - `"R-"`" for negative Number-type values
  
+### Dates 
+ 
+ - `"Future"` passes if the date is in the future (compared to when the test is run)
+ - `"Past"` passes if the date is in the past seen from when the test is run
+ 
 ### Types
 
  - `"Function"` for values that must be functions
  - `"Number"` for values that must be of type Number
  - `"Array"` for values that must be an array
  - `"Boolean"` for values that must be either true or false ("proper" Booleans)
+ - `"Date"` passes for Dates.
  - `"String"` for values that must be of type String
  - `"def"` for every value except `undefined`
  - `"notnull"` for every value except `null`
