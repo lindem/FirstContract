@@ -43,12 +43,13 @@ suite("contractify() and c() shorthand", function () {
             RR_Rp(sum)(1, NaN);
         });
     });
-    test("contractify error message [fail]", function () {
+    test("contractify error message [parameter]", function () {
         var msg;
         try {
-            RR_Rp(sum)(1, NaN);
+            RR_Rp("testlabel", sum)(1, NaN);
         } catch (e) {
             msg = e.message;
+            console.log(msg);
         }
         assert.ok(/function sum/.test(msg));
         assert.ok(/parameter 2/.test(msg));
@@ -68,6 +69,30 @@ suite("contractify() and c() shorthand", function () {
             var f = new F();
             assert.equal(f.baz(), "bar");
         });
+    });
+    test("contractify error message [return type]", function () {
+
+        function bang() {
+            return NaN;
+        }
+        var contract = c([], "Z"),
+            msg;
+        try {
+            contract(bang)();
+        } catch (e) {
+            msg = e.message;
+        }
+        assert.ok(/return value/.test(msg));
+    });
+    test("contractify labels", function () {
+        var testfn = RR_Rp("important label", sum),
+            msg;
+        try {
+            testfn(NaN, "blah");
+        } catch (e) {
+            msg = e.message;
+        }
+        assert.ok(/important label/.test(msg));
     });
 
 });

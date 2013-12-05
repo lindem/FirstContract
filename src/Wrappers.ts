@@ -33,12 +33,20 @@ export interface Contract {
  */
 export function c(params:any, returns:any):Function {
     var contract = {params: params, returns: returns};
-    return function (fn:Function) {
-        return contractify(contract, fn);
+
+    return function (label:any, fn?:Function) {
+
+        if (arguments["length"] === 1) {
+            // if there is no label provided,
+            // it's been called with just a function.
+            fn = label;
+            label = undefined;
+        }
+        return contractify(contract, fn, label);
     }
 }
 
-export function contractify(contract:Contract, fun:Function):Function {
+export function contractify(contract:Contract, fun:Function, label:string):Function {
     var paramContracts = contract.params.map(function (specifier):Function {
             var resolved = Common.byAlias(specifier);
             if (!resolved) {
@@ -46,7 +54,7 @@ export function contractify(contract:Contract, fun:Function):Function {
             }
             return resolved;
         }),
-        returnContract = contract.returns;
+        returnContract = Common.byAlias(contract.returns);
 
     /*
      return a closure which does the following:
@@ -60,33 +68,36 @@ export function contractify(contract:Contract, fun:Function):Function {
     return function ():any {
         var ret:any,
             i:number,
-            len:number = arguments["length"],
             name:string = Common.parseFunc(fun),
-            err:string;
+            contract_label = (typeof label === "string") ? label : "(no label)",
+            args = Array.prototype.slice.apply(arguments),
+            len:number;
 
-        for (i = 0; i < len; i += 1) {
+        for (i = 0, len = args.length; i < len; i += 1) {
             if (paramContracts[i]) {
-                try {
-                    paramContracts[i].apply(null, [arguments[i],
-                        ["function ", name, " [parameter ", i + 1, "]"].join("")
-                    ]);
-                } catch (e) {
-                    /* if there is a Contract Violation, insert the function name
-                     in front of the error message. */
-                    err = Common.violationMessage(e.message);
-                    e.message = ["Contract Violation:",
-                        "function:", name,
-                        "(parameter: ", i, "): "].join(" ");
-                    //throw e;
-                }
+                paramContracts[i].apply(null, [args[i],
+                    [
+                        "label: »", contract_label, "« ",
+                        " function ", name,
+                        " [parameter ", i + 1, "] ",
+                        args[i]
+                    ].join("")
+                ]);
             }
         }
-        ret = fun.apply(this, arguments);
-        if (typeof returnContract === 'string') {
-            returnContract = Common.byAlias(returnContract);
+        ret = fun.apply(this, Array.prototype.slice.apply(arguments));
+        if (returnContract) {
+            // call the contract on the return value.
+            returnContract.apply(null, [ret,
+            [
+                "label: »", contract_label, "« ",
+                " function ", name,
+                " [return value]: ",
+                ret
+            ].join("")
+            ]);
+            console.log("Bings!");
         }
-        // call the contract on the return value.
-        returnContract.apply(null, [ret]);
         // return the return value.
         return ret;
     }
