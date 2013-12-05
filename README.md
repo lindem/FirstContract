@@ -57,10 +57,25 @@ The `c` shorthand above creates a contract function. The first argument is
 an array with aliases for the parameters, the second parameter is an alias for 
 the return value's check.
 
+If you want to give a particular contract a label that will be included in the
+error message, you can. In the above example, instead of `contract(sum)`, call
+`contract("label", sum)`. See below how an error message looks with and without
+labels.
+
 As soon as a contract is violated, either by a contract function receiving 
 the wrong arguments or returning the wrong values, the contract will make
 your program blow up then and there by throwing a "contract violation" (an
-exception).
+exception). Examples:
+
+If a function returns a value illegal by the contract, the error message reads
+`[return value]` after the contract label and the function name (if any).
+
+    Contract Violation: label: »(no label)« function bang [return value]: NaN  is not an integer.
+
+If a function is supplied with the wrong kind of parameter, it reads like this:
+
+    Contract Violation: label: »testlabel«  function sum [parameter 2] NaN is not finite.
+
 
 As such, the code between entry and exit of the function is guaranteed to be
 able to make certain assumptions -- execution won't even reach the code
