@@ -46,7 +46,7 @@ create a contract for it:
 
     var c = require("firstcontract").c, 
         contract = c(["R", "R"], "R"),
-        sum = contract(sum);
+        csum = contract(sum);
         
 `"R"` is an alias for the contract "Real numbers".
 
@@ -70,6 +70,38 @@ which fulfilled their contracts.
 After development, if all contracts are "usually satisfied", you can either
 still leave them in, or remove them (but then you need to handle violations
 yourself). 
+
+## Example of transparency
+
+From the unit tests: 
+
+    function F() {
+        this.foo = "bar";
+        return this;
+    }
+    function baz () {
+        return this.foo;
+    }    
+    F.prototype.baz = c([], "S+")(baz);
+    
+The above contract specifies no contracts for parameters, but the return value 
+must be a nonempty string. The execution context `this` of the function is 
+preserved. This example shows that a contract is added very easily to a 
+function without even touching its implementation.
+
+## Aliases
+
+The easiest method of getting at a contract function is to use the 
+`Contracts.byAlias` function: 
+
+    var Contracts = require('firstcontract'),
+        // Contracts.TypeContracts.isString
+        isString = Contracts.byAlias("S"), 
+        // Contracts.NumberContracts.positiveInteger;
+        positiveInt = Contracts.byAlias("Z+") 
+        
+The wrappers `c` and `contractify` support aliases only, for reasons of 
+terseness. 
 
 The aliases include (this list is growing, as I added only the most useful 
 ones first): 
@@ -151,3 +183,14 @@ most elementary ones; it's not very DRY. Improve that.
 - A nicer API might be nice. Easier said than done.
 - maybe break out the contract types into other files. Not sure yet if that's
 already worth it; it's not that many yet.
+- allow for proper pre- and postcondition functions when figured out how to 
+integrate them in a way that doesn't look uglier than this API currently 
+looks. Yuck.
+
+## DISCLAIMER
+
+Of course contracts do not absolve you from eventually writing proper 
+error-checking code. It's just a tool, and a easy one to use. As the current
+form of contracts is fairly limited, these things cannot possibly do 
+everything proper aspect-oriented programming can. But then, that wasn't the
+original intent. 
