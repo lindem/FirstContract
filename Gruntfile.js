@@ -30,10 +30,26 @@ module.exports = function (grunt) {
                 options: {
                     module: 'commonjs'
                 }
+            },
+            amdbuild: {
+                src: ["src/FirstContract.ts"],
+                outDir: 'amd',
+                options: {
+                    module: "amd",
+                    sourceMap: false
+                }
+            },
+            plainjsbuild: {
+                src: ["src/fc-script.ts"],
+                options: {
+                    module: "commonjs"
+                }
             }
+
         },
         clean: {
-            commonjs: ["commonjs"]
+            commonjs: ["commonjs"],
+            amd: ["amd"]
         },
         mochaTest: {
             test: {
@@ -48,6 +64,11 @@ module.exports = function (grunt) {
             browsersuite: {
                 files: {
                     "browser/build.js": ["browser/alltests.js"]
+                }
+            },
+            plainjsbuild: {
+                files: {
+                    "plainjs/firstcontract.js": ["src/fc-script.js"]
                 }
             }
         },
@@ -82,5 +103,13 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask("gitpush", ["gitpush:tixn", "gitpush:github"]);
     grunt.registerTask("test", ["mochaTest"]);
-    grunt.registerTask("default", ["clean:commonjs", "ts:cjsbuild", "mochaTest"]);
+    grunt.registerTask("default", [
+        "clean:commonjs",
+        "clean:amd",
+        "ts:cjsbuild",
+        "ts:amdbuild",
+        // plain javascript is built with browserify.
+        "ts:plainjsbuild",
+        "browserify:plainjsbuild",
+        "mochaTest"]);
 };
