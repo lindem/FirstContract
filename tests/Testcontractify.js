@@ -53,5 +53,21 @@ suite("contractify() and c() shorthand", function () {
         assert.ok(/function sum/.test(msg));
         assert.ok(/parameter 2/.test(msg));
     });
+    test("preserve execution context for wrapped function", function () {
+        function F() {
+            this.foo = "bar";
+            return this;
+        }
+        function baz () {
+            return this.foo;
+        }
+
+        F.prototype.baz = c([], "S+")(baz);
+
+        noThrowTest(assert, function () {
+            var f = new F();
+            assert.equal(f.baz(), "bar");
+        });
+    });
 
 });
