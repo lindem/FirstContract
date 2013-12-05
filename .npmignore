@@ -10,3 +10,4 @@ Gruntfile
 .idea
 *iml
 browser
+Gruntfile.js
