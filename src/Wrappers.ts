@@ -96,7 +96,6 @@ export function contractify(contract:Contract, fun:Function, label:string):Funct
                 ret
             ].join("")
             ]);
-            console.log("Bings!");
         }
         // return the return value.
         return ret;
