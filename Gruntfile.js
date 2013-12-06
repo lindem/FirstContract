@@ -17,7 +17,7 @@ module.exports = function (grunt) {
                 sourceMap: true,               // generate a source map for every output js file. [true (default) | false]
                 sourceRoot: '',                // where to locate TypeScript files. [(default) '' == source ts location]
                 mapRoot: '',                   // where to locate .map.js files. [(default) '' == generated js location.]
-                declaration: false            // generate a declaration .d.ts file for every output js file. [true | false (default)]
+                declaration: false             // generate a declaration .d.ts file for every output js file. [true | false (default)]
             },
             // a particular target
             cjsbuild: {
@@ -49,7 +49,8 @@ module.exports = function (grunt) {
         },
         clean: {
             commonjs: ["commonjs"],
-            amd: ["amd"]
+            amd: ["amd"],
+            plainjs: ["plainjs"]
         },
         mochaTest: {
             test: {
@@ -68,7 +69,7 @@ module.exports = function (grunt) {
             },
             plainjsbuild: {
                 files: {
-                    "plainjs/firstcontract.js": ["src/fc-script.js"]
+                    "plainjs/firstcontract.js": ["commonjs/FirstContract.js"]
                 }
             }
         },
@@ -106,6 +107,7 @@ module.exports = function (grunt) {
     grunt.registerTask("default", [
         "clean:commonjs",
         "clean:amd",
+        "clean:plainjs",
         "ts:cjsbuild",
         "ts:amdbuild",
         // plain javascript is built with browserify.
