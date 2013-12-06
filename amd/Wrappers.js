@@ -4,17 +4,27 @@ define(["require", "exports", "./Common"], function(require, exports, __Common__
     function c(params, returns) {
         var contract = { params: params, returns: returns };
 
-        return function (label, fn) {
-            if (arguments["length"] === 1) {
+        return function (label, fn, thisp) {
+            var arglen = arguments["length"];
+
+            if (arglen === 2) {
+                if (typeof arguments[0] === "function") {
+                    fn = arguments[0];
+                    thisp = arguments[1];
+                    label = undefined;
+                }
+            }
+
+            if (arglen === 1) {
                 fn = label;
                 label = undefined;
             }
-            return exports.contractify(contract, fn, label);
+            return exports.contractify(contract, fn, label, thisp);
         };
     }
     exports.c = c;
 
-    function contractify(contract, fun, label) {
+    function contractify(contract, fun, label, thisp) {
         var paramContracts = contract.params.map(function (specifier) {
             var resolved = Common.byAlias(specifier);
             if (!resolved) {
@@ -44,7 +54,7 @@ define(["require", "exports", "./Common"], function(require, exports, __Common__
                     ]);
                 }
             }
-            ret = fun.apply(this, Array.prototype.slice.apply(arguments));
+            ret = fun.apply((thisp ? thisp : this), Array.prototype.slice.apply(arguments));
             if (returnContract) {
                 returnContract.apply(null, [
                     ret,
@@ -58,7 +68,6 @@ define(["require", "exports", "./Common"], function(require, exports, __Common__
                         ret
                     ].join("")
                 ]);
-                console.log("Bings!");
             }
 
             return ret;

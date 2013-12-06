@@ -51,6 +51,7 @@ var aliases = {
     // Basic
     "none": BasicContracts.none,
     "": BasicContracts.none,
+    "fail": BasicContracts.fail,
     // satisfy if not undefined
     "def": BasicContracts.defined,
     // satisfy if neither null nor undefined

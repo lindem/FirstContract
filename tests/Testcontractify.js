@@ -1,7 +1,7 @@
 /**
  * Created by lindem on 12/3/13.
  */
-function sum (a, b) {
+function sum(a, b) {
     return a + b;
 }
 
@@ -49,7 +49,6 @@ suite("contractify() and c() shorthand", function () {
             RR_Rp("testlabel", sum)(1, NaN);
         } catch (e) {
             msg = e.message;
-            console.log(msg);
         }
         assert.ok(/function sum/.test(msg));
         assert.ok(/parameter 2/.test(msg));
@@ -59,7 +58,8 @@ suite("contractify() and c() shorthand", function () {
             this.foo = "bar";
             return this;
         }
-        function baz () {
+
+        function baz() {
             return this.foo;
         }
 
@@ -75,6 +75,7 @@ suite("contractify() and c() shorthand", function () {
         function bang() {
             return NaN;
         }
+
         var contract = c([], "Z"),
             msg;
         try {
@@ -93,6 +94,48 @@ suite("contractify() and c() shorthand", function () {
             msg = e.message;
         }
         assert.ok(/important label/.test(msg));
+    });
+});
+
+suite("c shorthand curried func -- thisp special argument", function () {
+    var myObject = {
+            p: 5,
+            fun: function shorthand () {
+                return this.p;
+            }
+        },
+        contract = c([], "Z+0"),
+        errorcontract = c([], "fail");
+    test("ternary call [label, function, thisp]", function () {
+        assert.strictEqual(contract("label", myObject.fun, myObject)(), 5);
+    });
+
+    test("binary call [function, thisp]", function () {
+        assert.strictEqual(contract("label", myObject.fun, myObject)(), 5);
+    });
+
+    test("ternary call error message", function () {
+        var msg;
+        try {
+            errorcontract("3c", myObject.fun, myObject)();
+        } catch (e) {
+            msg = e.message;
+        }
+        assert.ok(/3c/.test(msg));
+        assert.ok(/shorthand/.test(msg));
+        assert.ok(/return value/.test(msg));
+    });
+
+    test("binary call error message [fun, thisp]", function () {
+        var msg;
+        try {
+            errorcontract(myObject.fun, myObject)();
+        } catch (e) {
+            msg = e.message;
+        }
+        assert.ok(/no label/.test(msg));
+        assert.ok(/shorthand/.test(msg));
+        assert.ok(/return value/);
     });
 
 });

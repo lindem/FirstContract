@@ -51,4 +51,10 @@ suite("BasicContracts", function () {
             BC.properValue(1);
         });
     });
+
+    test("fail contract", function () {
+        throwTest(assert, function () {
+            BC.fail(1);
+        }, /prescribed/);
+    })
 });

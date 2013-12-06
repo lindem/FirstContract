@@ -34,19 +34,74 @@ export interface Contract {
 export function c(params:any, returns:any):Function {
     var contract = {params: params, returns: returns};
 
-    return function (label:any, fn?:Function) {
+    /*
+        the function is the result of a partial function application of
+        contractify. see contractify below for description of the arguments
+        to it.
 
-        if (arguments["length"] === 1) {
+     */
+
+    return function (label:any, fn?:any, thisp?:any) {
+        var arglen = arguments["length"];
+        /*
+            argument parsing. Easy to botch.
+            the intention is that people should be able to call this the
+            following ways:
+
+            fun(label, func, thisp) [handled by general case]
+            fun(label, func) [handled by general case]
+            fun(func, thisp) [handled by explicit check, see below]
+            fun(func) [handled by explicit check, see below]
+
+            label is always a string, and if it's present, always param 1.
+            if a string is param 1, the next param is a Function.
+            if a function is param 1, the next param is either undefined or thisp.
+         */
+
+        if (arglen === 2) {
+            // fun(func, thisp)
+            if (typeof arguments[0] === "function") {
+                fn = arguments[0];
+                thisp = arguments[1];
+                label = undefined;
+            }
+            // fun(label, func) is handled by the general case.
+        }
+
+        if (arglen === 1) {
             // if there is no label provided,
             // it's been called with just a function.
             fn = label;
             label = undefined;
         }
-        return contractify(contract, fn, label);
+        return contractify(contract, fn, label, thisp);
     }
 }
 
-export function contractify(contract:Contract, fun:Function, label:string):Function {
+/**
+ * This is the main wrapper. The result of this function is another function,
+ * which wraps the target function with contract behavior.
+ *
+ * As long as the contract is upheld, the function acts exactly like the
+ * contracted function.
+ *
+ * The argument "thisp" of this call is to set the execution context explicitly,
+ * which is important for contracting just single calls to methods after the
+ * methods have already been defined.
+ *
+ * contractify(..., object.func, ..., object).
+ *
+ * the "c" function provides an easy frontend to contractify.
+ *
+ *
+ * @param contract -- the contract description.
+ * @param fun -- the function for which the contract is created.
+ * @param label -- a label, which, if given, is enclosed in error messages.
+ * @param thisp -- execution context for the function.
+ * @returns {function(): *}
+ */
+
+export function contractify(contract:Contract, fun:Function, label:string, thisp:any):Function {
     var paramContracts = contract.params.map(function (specifier):Function {
             var resolved = Common.byAlias(specifier);
             if (!resolved) {
@@ -85,7 +140,7 @@ export function contractify(contract:Contract, fun:Function, label:string):Funct
                 ]);
             }
         }
-        ret = fun.apply(this, Array.prototype.slice.apply(arguments));
+        ret = fun.apply((thisp? thisp : this), Array.prototype.slice.apply(arguments));
         if (returnContract) {
             // call the contract on the return value.
             returnContract.apply(null, [ret,

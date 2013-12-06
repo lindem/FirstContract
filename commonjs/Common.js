@@ -43,6 +43,7 @@ exports.byAlias = byAlias;
 var aliases = {
     "none": BasicContracts.none,
     "": BasicContracts.none,
+    "fail": BasicContracts.fail,
     "def": BasicContracts.defined,
     "proper": BasicContracts.properValue,
     "Z+0": NumberContracts.nonNegativeInteger,
