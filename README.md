@@ -220,7 +220,7 @@ You can, in that case (assuming the Contract is `Z+0`, for the parameters, and
     // ...
     foo = contract(anotherObject.importantCall, anotherObject)(bar, baz);
     
-The only thing you must do is to provide the object the method belongs to as an
+The only thing you must do is **provide the object the method belongs to** as an
 additional parameter to the contract.
 
 > The reason of that is that anotherObject.importantCall is just the "name" under
@@ -264,6 +264,6 @@ The original intent was to provide a means to easily add constraints checking
 code with (for developers) meaningful error messages as conveniently as 
 possible. I'm lazy, so the less I have to type to do this, the more likely I 
 will. Also, it was meant to be non-invasive -- if I had to directly edit the 
-functions want to monitor, it's already unusable. 
+functions I want to monitor, it's already unusable. 
 
 Suggestions welcome.
