@@ -4,9 +4,9 @@ FirstContract
 A JavaScript data contract library. It's not done yet, but usable. It works with:
 
 - node.js
-- MSIE 10
+- MSIE (tested 10 and 11)
 - Chrome/Chromium (also on Android)
-- Firefox
+- Firefox 
 - PhantomJS
 
 ## Why type contracts?
@@ -15,15 +15,20 @@ static typing (and many people, myself included, argue it doesn't necessarily
 need it), sometimes it's nice, during development, to have code just die if
 types don't match. 
 
-If you declare a function that should take a non-negative, proper number, and
-return a non-negative, proper number, and you want code to die then and there
-if that isn't the case, then contracts are a tool to do that.
+If you declare a function that should take (for example)) a non-negative, 
+proper number, and return a non-negative, proper number, and you want code to 
+die then and there if that isn't the case, then contracts are a tool to do 
+that -- think "type constraints" for the application of functions to both 
+parameters and return value. 
+
+Aside from that, this library contains transparent check functions (so-called
+elementary contracts) which are easy to apply and don't get in the way. "
 
 Firstcontract will throw Exceptions to have your code die. It doesn't require
 you to even touch the function you are making a contract for. It's got a terse 
 syntax and is on npm. 
 
-## getting firstcontract
+## Getting FirstContract
 
 You can install firstcontract through npm, by typing
 
@@ -32,7 +37,7 @@ You can install firstcontract through npm, by typing
 or by cloning this repository. The module is written in TypeScript, which I am
 learning at the moment. Ideas to improve are welcome.
 
-## how it works
+## How it works
 
 A trivial example: 
 
@@ -173,6 +178,19 @@ All ECs share the same order of parameters:
 - `semanticName` is what the variable actually is for (try "margin", "width",
 "size"). The error message will contain that name and why a contract failed.
 
+Of course, the `Contracts.byAlias` call makes it easy to do:
+
+    var foo = bar / baz;
+    
+you can check that `bar / baz` is in fact an integer (or throw an exception
+if it isn't) like so:
+
+    var Z = Contracts.byAlias("Z"),
+        foo = Z(bar / baz, "important calculation for foo"),
+        
+As the contract still returns its value if it's fulfilled, this code block 
+behaves the same as before in that case.       
+
 All ECs either pass transparently or blow up by throwing an Error. That's the
  intention.
  
@@ -186,7 +204,41 @@ in full.
  - `Contracts.ObjectContracts.allValuesContracts(obj, [contractsByAlias])` 
  checks whether every value (right-hand-side part) of the object satisfies
  all contracts.
- 
+
+### Immediate contracts on method calls
+
+You can also add a contract to a method call on the fly. An example:
+
+    // ...
+    foo = anotherObject.importantCall(bar, baz)
+    // ...
+    
+You can, in that case (assuming the Contract is `Z+0`, for the parameters, and 
+`R+0`, for positive proper numbers), do:
+
+    var contract = c(["Z+0", "Z+0"], R+0);
+    // ...
+    foo = contract(anotherObject.importantCall, anotherObject)(bar, baz);
+    
+The only thing you must do is to provide the object the method belongs to as an
+additional parameter to the contract.
+
+> The reason of that is that anotherObject.importantCall is just the "name" under
+> which the function can be reached. That "anotherObject." is part of the name 
+> will only have an effect on the function's `this` if it's immediately executed 
+> by appending () to that. So you must provide the execution context explicitly 
+> in this scenario. 
+
+You can also do that with a label that gets repeated in the error message, so
+you can more easily find it (just prepend it to the function wrapped and the
+execution context as an additional argument):
+
+    foo = contract("look here!", anotherObject.importantCall, anotherObject)
+                  (bar, baz);
+                  
+See above, "How it works", for example messages to see what an error message
+looks like. 
+
 ### Tests
 
 Unit Tests are in the `test` directory. Coverage is probably not complete. 
@@ -195,17 +247,23 @@ Unit Tests are in the `test` directory. Coverage is probably not complete.
 
 - There's some redundancy in some checks. They are all built by combining the
 most elementary ones; it's not very DRY. Improve that.
+
 - A nicer API might be nice. Easier said than done.
-- maybe break out the contract types into other files. Not sure yet if that's
-already worth it; it's not that many yet.
+
 - allow for proper pre- and postcondition functions when figured out how to 
 integrate them in a way that doesn't look uglier than this API currently 
-looks. Yuck.
+looks.
 
 ## DISCLAIMER
 
-Of course contracts do not absolve you from eventually writing proper 
-error-checking code. It's just a tool, and a easy one to use. As the current
-form of contracts is fairly limited, these things cannot possibly do 
-everything proper aspect-oriented programming can. But then, that wasn't the
-original intent. 
+As the current form of contracts is fairly limited, these things cannot 
+possibly do everything proper aspect-oriented programming can. But then, 
+that wasn't the original intent.
+
+The original intent was to provide a means to easily add constraints checking
+code with (for developers) meaningful error messages as conveniently as 
+possible. I'm lazy, so the less I have to type to do this, the more likely I 
+will. Also, it was meant to be non-invasive -- if I had to directly edit the 
+functions want to monitor, it's already unusable. 
+
+Suggestions welcome.
