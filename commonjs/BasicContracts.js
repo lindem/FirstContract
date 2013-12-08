@@ -42,6 +42,7 @@ function properValue(a, semantic) {
     if (typeof semantic === "undefined") { semantic = "this argument"; }
     exports.defined(a, semantic);
     exports.notNull(a, semantic);
+    return a;
 }
 exports.properValue = properValue;
 

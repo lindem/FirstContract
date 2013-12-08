@@ -43,6 +43,7 @@ define(["require", "exports", "./Common"], function(require, exports, __Common__
         if (typeof semantic === "undefined") { semantic = "this argument"; }
         exports.defined(a, semantic);
         exports.notNull(a, semantic);
+        return a;
     }
     exports.properValue = properValue;
 });

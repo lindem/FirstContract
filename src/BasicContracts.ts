@@ -71,4 +71,5 @@ export function realBoolean(b:boolean, semantic:string = "this argument"):boolea
 export function properValue(a:any, semantic:string = "this argument"):any {
     defined(a, semantic);
     notNull(a, semantic);
+    return a;
 }
